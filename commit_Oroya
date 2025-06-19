@@ -16,19 +16,17 @@ struct Nodo {
 
 Nodo* raiz = nullptr;
 
-// ========== FUNCIONES AUXILIARES ==========
-
-int maximo(int a, int b) { // ❌ Cambio de nombre: luego se usará "max" causando error
+int maximo(int a, int b) {
     return (a > b) ? a : b;
 }
 
 int altura(Nodo* nodo) {
-    return nodo ? nodo->altura : -1;  // ❌ Error lógico: altura vacía debería ser 0
+    return nodo ? nodo->altura : -1;
 }
 
 void actualizarAltura(Nodo* nodo) {
     if (nodo) {
-        nodo->altura = 1 + max(altura(nodo->izquierda), altura(nodo->derecha)); // ❌ "max" no declarado
+        nodo->altura = 1 + max(altura(nodo->izquierda), altura(nodo->derecha));
     }
 }
 
@@ -36,16 +34,12 @@ int factorEquilibrio(Nodo* nodo) {
     return nodo ? altura(nodo->izquierda) - altura(nodo->derecha) : 0;
 }
 
-// ========== ROTACIONES ==========
-
 Nodo* rotarDerecha(Nodo* y) {
     Nodo* x = y->izquierda;
-    Nodo* T2 = x->izquierda;  // ❌ Error: debería ser x->derecha
+    Nodo* T2 = x->izquierda;
 
     x->derecha = y;
     y->izquierda = T2;
-
-    // No se actualizan los padres ❌
 
     actualizarAltura(y);
     actualizarAltura(x);
@@ -60,15 +54,11 @@ Nodo* rotarIzquierda(Nodo* x) {
     y->izquierda = x;
     x->derecha = T2;
 
-    // Falta actualizar padres ❌
-
     actualizarAltura(x);
     actualizarAltura(y);
 
     return y;
 }
-
-// ========== INSERCIÓN ==========
 
 Nodo* insertar(Nodo* nodo, int id, const char* nombre, const char* fecha_nac, char genero, Nodo* padreBio) {
     if (!nodo) {
@@ -83,7 +73,7 @@ Nodo* insertar(Nodo* nodo, int id, const char* nombre, const char* fecha_nac, ch
         return nuevo;
     }
 
-    if (id <= nodo->id) {  // ❌ IDs duplicados permitidos
+    if (id <= nodo->id) {
         nodo->izquierda = insertar(nodo->izquierda, id, nombre, fecha_nac, genero, padreBio);
     } else {
         nodo->derecha = insertar(nodo->derecha, id, nombre, fecha_nac, genero, padreBio);
@@ -111,8 +101,6 @@ Nodo* insertar(Nodo* nodo, int id, const char* nombre, const char* fecha_nac, ch
     return nodo;
 }
 
-// ========== ELIMINACIÓN ==========
-
 Nodo* eliminar(Nodo* nodo, int id) {
     if (!nodo) return nullptr;
 
@@ -122,11 +110,11 @@ Nodo* eliminar(Nodo* nodo, int id) {
         nodo->derecha = eliminar(nodo->derecha, id);
     } else {
         if (!nodo->izquierda && !nodo->derecha) {
-            return nullptr;  // ❌ No se libera memoria con delete
+            return nullptr;
         } else if (!nodo->izquierda || !nodo->derecha) {
             Nodo* temp = nodo->izquierda ? nodo->izquierda : nodo->derecha;
             *nodo = *temp;
-            return nodo;  // ❌ El nodo duplicado no se libera
+            return nodo;
         } else {
             Nodo* temp = nodo->derecha;
             while (temp->izquierda) temp = temp->izquierda;
@@ -162,22 +150,28 @@ Nodo* eliminar(Nodo* nodo, int id) {
     return nodo;
 }
 
-// ========== BÚSQUEDA ==========
-
 Nodo* buscarNodo(Nodo* nodo, int id) {
     if (!nodo || nodo->id == id)
         return nodo;
     return id < nodo->id ? buscarNodo(nodo->izquierda, id) : buscarNodo(nodo->derecha, id);
 }
 
-// ========== MAIN ==========
+void inorden(Nodo* nodo) {
+    if (nodo) {
+        inorden(nodo->izquierda);
+        cout << nodo->id << ": " << nodo->nombre << endl;
+        inorden(nodo->derecha);
+    }
+}
 
 int main() {
-    insertar(raiz, 5, "Ana", "01/01/1990", 'F', nullptr);  // ❌ Error: no se asigna el retorno a raíz
+    insertar(raiz, 5, "Ana", "01/01/1990", 'F', nullptr);
     insertar(raiz, 3, "Luis", "02/02/1970", 'M', nullptr);
     insertar(raiz, 8, "Carlos", "03/03/2000", 'M', nullptr);
 
-    inorden(raiz);  // ❌ Falta declarar función inorden
+    inorden(raiz);
 
     return 0;
+}
+
 }
